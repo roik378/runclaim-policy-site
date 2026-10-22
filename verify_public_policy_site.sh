@@ -46,9 +46,23 @@ grep -qE 'mailto:roik378@gmail.com' "$site_dir"/*/index.html
 grep -qE '更新日期：2026 年 10 月 18 日' "$site_dir/index.html"
 grep -qE '生效日期：2026 年 10 月 18 日' "$site_dir/privacy/index.html"
 grep -qE 'Apple 地图服务可能处理' "$site_dir/privacy/index.html"
-grep -qE '地图交互（包括使用的功能、查看的地点' "$site_dir/privacy/index.html"
 grep -qE '应用、设备和网络配置与性能数据' "$site_dir/privacy/index.html"
 grep -qE '不表示 RunClaim 的 MapKit 用法会发送每一类数据' "$site_dir/privacy/index.html"
+required_map_disclosure_phrases=(
+  '请求时间'
+  '设备型号与系统版本'
+  '输入语言'
+  '可见地图范围'
+  '在已授权时的设备位置'
+  '地图交互（包括使用的功能、查看的地点'
+  'Maps 通知的交互'
+)
+for phrase in "${required_map_disclosure_phrases[@]}"; do
+  if ! grep -Fq -- "$phrase" "$site_dir/privacy/index.html"; then
+    echo "missing required Apple Maps disclosure category: $phrase" >&2
+    exit 1
+  fi
+done
 grep -qE '最后一次接受的位置样本' "$site_dir/privacy/index.html"
 grep -qE '导出时间戳 exportedAt' "$site_dir/privacy/index.html"
 grep -qE '本周回顾 PNG' "$site_dir/privacy/index.html"
